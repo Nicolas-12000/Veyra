@@ -54,9 +54,33 @@ export async function archiveRoutine(params: {
 }) {
   await assertRoutineOwnership(params.routineId, params.userId);
 
+  await db.transaction(async (tx) => {
+    await tx
+      .update(routines)
+      .set({ isArchived: true })
+      .where(eq(routines.id, params.routineId));
+
+    await tx
+      .update(userProfiles)
+      .set({ activeRoutineId: null })
+      .where(
+        and(
+          eq(userProfiles.id, params.userId),
+          eq(userProfiles.activeRoutineId, params.routineId)
+        )
+      );
+  });
+}
+
+export async function restoreRoutine(params: {
+  userId: string;
+  routineId: string;
+}) {
+  await assertRoutineOwnership(params.routineId, params.userId);
+
   await db
     .update(routines)
-    .set({ isArchived: true })
+    .set({ isArchived: false })
     .where(eq(routines.id, params.routineId));
 }
 

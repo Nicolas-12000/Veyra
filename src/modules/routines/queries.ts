@@ -7,17 +7,29 @@ import {
   routines,
 } from "@/drizzle/schema";
 
+function routineSummarySelect() {
+  return {
+    id: routines.id,
+    name: routines.name,
+    description: routines.description,
+    isArchived: routines.isArchived,
+    createdAt: routines.createdAt,
+  };
+}
+
 export async function getRoutinesForUser(userId: string) {
   return db
-    .select({
-      id: routines.id,
-      name: routines.name,
-      description: routines.description,
-      isArchived: routines.isArchived,
-      createdAt: routines.createdAt,
-    })
+    .select(routineSummarySelect())
     .from(routines)
     .where(and(eq(routines.userId, userId), eq(routines.isArchived, false)))
+    .orderBy(asc(routines.createdAt));
+}
+
+export async function getArchivedRoutinesForUser(userId: string) {
+  return db
+    .select(routineSummarySelect())
+    .from(routines)
+    .where(and(eq(routines.userId, userId), eq(routines.isArchived, true)))
     .orderBy(asc(routines.createdAt));
 }
 

@@ -15,6 +15,10 @@ export const archiveRoutineSchema = z.object({
   routineId: z.string().uuid(),
 });
 
+export const restoreRoutineSchema = z.object({
+  routineId: z.string().uuid(),
+});
+
 export const addRoutineDaySchema = z.object({
   routineId: z.string().uuid(),
   dayOrder: z.number().int().min(1),
