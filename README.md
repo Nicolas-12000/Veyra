@@ -1,36 +1,92 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Veyra
 
-## Getting Started
+Veyra es un tracker de entrenamiento mobile-first y dark-first, pensado para llevar rutinas, sesiones, peso corporal y analítica de progreso sin fricción en el gimnasio.
 
-First, run the development server:
+## Qué incluye
+
+- Autenticación con Supabase.
+- Rutinas con días, ejercicios y sustituciones.
+- Registro de sesiones y sets.
+- Seguimiento de peso corporal y fases.
+- Analítica de volumen, 1RM estimado y tendencias.
+- Exportación de datos del usuario.
+
+## Stack
+
+- Next.js 16 con App Router.
+- React 19.
+- Supabase Auth + PostgreSQL.
+- Drizzle ORM y Drizzle Kit.
+- Tailwind CSS + estilos globales propios.
+- Deploy pensado para Vercel.
+
+## Requisitos
+
+- Node.js 20 o superior.
+- pnpm.
+- Un proyecto de Supabase con Postgres.
+
+## Variables de entorno
+
+Copia [`.env.example`](.env.example) a `.env.local` y completa estas variables:
+
+- `DATABASE_URL`
+- `SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `SUPABASE_ANON_KEY`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY` si necesitas tareas administrativas
+
+Para tareas programadas o limpieza automática, añade también una clave propia como `CRON_SECRET`.
+
+## Instalación
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Desarrollo local
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+pnpm dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Abre `http://localhost:3000`.
 
-## Learn More
+## Base de datos
 
-To learn more about Next.js, take a look at the following resources:
+El esquema vive en [drizzle/schema.ts](drizzle/schema.ts). Las migraciones están en [drizzle/migrations](drizzle/migrations).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Generar migraciones:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+pnpm db:generate
+```
 
-## Deploy on Vercel
+Aplicar migraciones:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+pnpm db:migrate
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Despliegue en Vercel
+
+1. Importa el repositorio en Vercel.
+2. Configura las variables de entorno de producción.
+3. Verifica que `DATABASE_URL` apunte al Postgres de Supabase.
+4. Añade en Supabase Auth las URLs de producción para login y callback.
+5. Despliega.
+
+## Estructura rápida
+
+- [app/](app) contiene rutas, layouts y páginas.
+- [src/modules/](src/modules) contiene la lógica de dominio.
+- [drizzle/](drizzle) contiene el esquema y las migraciones SQL.
+- [lib/](lib) contiene clientes compartidos de Supabase y base de datos.
+- [public/](public) contiene assets estáticos.
+
+## Notas
+
+- Las rutinas archivadas no se borran: se ocultan de la vista principal y se pueden restaurar.
+- El proyecto usa Supabase como base de datos principal y auth provider.
+- La UI está optimizada para móvil y pensada para uso en gimnasio.
