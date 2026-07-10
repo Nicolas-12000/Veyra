@@ -112,7 +112,7 @@ export function WeightHistoryList({ metrics, unit }: Props) {
             <div className="flex items-start gap-3">
               <Calendar size={18} className="mt-0.5" style={{ color: "var(--color-ink-muted)" }} />
               <div>
-                <div className="text-body-strong flex items-center gap-2" style={{ color: "var(--color-ink)" }}>
+                <div className="text-body-strong flex items-center gap-2 whitespace-nowrap" style={{ color: "var(--color-ink)" }}>
                   {m.recordedDate}
                   {m.notes && (
                     <span

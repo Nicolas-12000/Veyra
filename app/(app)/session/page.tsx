@@ -76,7 +76,7 @@ export default async function SessionPage() {
             {routines.length > 0 && (
               <Link
                 href="/routines"
-                className="btn btn-ghost text-caption no-underline"
+                className="btn btn-ghost no-underline"
                 style={{ textDecoration: "none", color: "var(--color-ink-muted)" }}
               >
                 <BookOpen size={14} />

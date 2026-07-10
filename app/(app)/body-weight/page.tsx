@@ -23,14 +23,16 @@ export default async function BodyWeightPage() {
 
   return (
     <div className="page-content pb-32">
-      <div className="mb-8 flex items-center justify-between">
+      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-display-lg" style={{ color: "var(--color-ink)" }}>Peso Corporal</h1>
           <p className="text-body mt-2" style={{ color: "var(--color-ink-muted)" }}>
             Seguimiento y proyección
           </p>
         </div>
-        <LogWeightButton unit={unit} />
+        <div className="flex-shrink-0">
+          <LogWeightButton unit={unit} />
+        </div>
       </div>
 
       {metrics.length === 0 ? (

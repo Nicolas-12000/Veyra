@@ -17,14 +17,38 @@ export function LogWeightForm({ unit, onSuccess }: { unit: Unit; onSuccess?: () 
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const displayUnit = unit;
+  const minW = unit === "lb" ? 44 : 20;
+  const maxW = unit === "lb" ? 880 : 400;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+
+    // Validate date
+    if (!date) {
+      setError("La fecha es obligatoria.");
+      return;
+    }
+    const dateObj = new Date(date + "T12:00:00");
+    if (isNaN(dateObj.getTime())) {
+      setError("Fecha inválida.");
+      return;
+    }
+    if (dateObj > new Date()) {
+      setError("La fecha no puede ser futura.");
+      return;
+    }
+
+    // Validate weight
     const numeric = parseFloat(value);
+    const minW = unit === "lb" ? 44 : 20;   // ~20kg / ~44lb
+    const maxW = unit === "lb" ? 880 : 400; // ~400kg / ~880lb
     if (isNaN(numeric) || numeric <= 0) {
       setError("Ingresa un peso válido.");
+      return;
+    }
+    if (numeric < minW || numeric > maxW) {
+      setError(`El peso debe estar entre ${minW} y ${maxW} ${unit}.`);
       return;
     }
 
@@ -33,12 +57,16 @@ export function LogWeightForm({ unit, onSuccess }: { unit: Unit; onSuccess?: () 
     startTransition(async () => {
       const res = await logBodyWeight({
         weightKg,
-        recordedDate: new Date(date + "T12:00:00"),
+        recordedDate: dateObj,
         notes: notes.trim() || undefined,
       });
 
       if ("error" in res) {
-        setError("Error al guardar. Intenta de nuevo.");
+        setError(
+          typeof res.error === "string"
+            ? res.error
+            : "Error al guardar. Verifica que no tengas ya un registro en esa fecha."
+        );
         return;
       }
 
@@ -62,15 +90,15 @@ export function LogWeightForm({ unit, onSuccess }: { unit: Unit; onSuccess?: () 
             className="text-label-caps block mb-2"
             style={{ color: "var(--color-ink-muted)" }}
           >
-            Peso ({displayUnit})
+            Peso ({unit})
           </label>
           <div className="flex items-center gap-3">
             <input
               id="weight-val"
               type="number"
               step="0.1"
-              min="20"
-              max="500"
+              min={String(minW)}
+              max={String(maxW)}
               className="input-number-large flex-1"
               style={{ textAlign: "center" }}
               placeholder={unit === "kg" ? "75.0" : "165.0"}
@@ -83,7 +111,7 @@ export function LogWeightForm({ unit, onSuccess }: { unit: Unit; onSuccess?: () 
               className="text-display-sm flex-shrink-0"
               style={{ color: "var(--color-primary)", minWidth: "36px" }}
             >
-              {displayUnit}
+              {unit}
             </div>
           </div>
           {value && !isNaN(parseFloat(value)) && (

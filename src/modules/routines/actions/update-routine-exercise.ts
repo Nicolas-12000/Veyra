@@ -12,9 +12,13 @@ export async function updateRoutineExerciseAction(payload: unknown) {
     return { error: parsed.error.flatten() } as const;
   }
 
-  const userId = await requireUserId();
-  await updateRoutineExercise({ userId, ...parsed.data });
-
-  revalidatePath("/routines");
-  return { success: true } as const;
+  try {
+    const userId = await requireUserId();
+    await updateRoutineExercise({ userId, ...parsed.data });
+    revalidatePath("/routines");
+    return { success: true } as const;
+  } catch (error) {
+    console.error("Error updating routine exercise:", error);
+    return { error: "Error al actualizar el ejercicio de la rutina." } as const;
+  }
 }

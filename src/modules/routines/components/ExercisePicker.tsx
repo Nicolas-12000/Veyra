@@ -77,8 +77,8 @@ export function ExercisePicker({ exercises, onPick, onClose }: ExercisePickerPro
     return acc;
   }, {});
 
-  async function handleCreateSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  async function handleCreateSubmit(e?: React.FormEvent | React.MouseEvent) {
+    if (e) e.preventDefault();
     setCreateError(null);
 
     if (!newName.trim()) {
@@ -182,7 +182,7 @@ export function ExercisePicker({ exercises, onPick, onClose }: ExercisePickerPro
 
         {/* Form or Search Picker */}
         {isCreating ? (
-          <form onSubmit={handleCreateSubmit} className="flex-1 flex flex-col px-5 pb-5 overflow-y-auto">
+          <div className="flex-1 flex flex-col px-5 pb-5 overflow-y-auto">
             {createError && (
               <div className="mb-4 p-3 rounded-lg text-caption" style={{ background: "var(--color-danger-subtle)", border: "1px solid var(--color-danger)", color: "var(--color-danger)" }}>
                 {createError}
@@ -274,8 +274,9 @@ export function ExercisePicker({ exercises, onPick, onClose }: ExercisePickerPro
                 Atrás
               </button>
               <button
-                type="submit"
+                type="button"
                 className="btn btn-primary flex-1"
+                onClick={handleCreateSubmit}
                 disabled={createPending}
               >
                 {createPending ? (
@@ -286,7 +287,7 @@ export function ExercisePicker({ exercises, onPick, onClose }: ExercisePickerPro
                 {createPending ? "Creando..." : "Crear y agregar"}
               </button>
             </div>
-          </form>
+          </div>
         ) : (
           <>
             {/* Search Input */}

@@ -157,32 +157,29 @@ export function RoutineEditor({ routineId, days, allExercises }: RoutineEditorPr
 
   return (
     <div>
-      {/* Day tabs */}
+      {/* Day tabs - scrollable horizontal strip */}
       <div
-        className="flex gap-2 mb-6 overflow-x-auto pb-2"
-        style={{ scrollbarWidth: "none" }}
+        className="flex gap-1.5 mb-6 overflow-x-auto pb-2"
+        style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}
       >
         {localDays.map((day) => (
           <button
             key={day.id}
             onClick={() => setActiveDay(day.id)}
-            className="flex-shrink-0 px-4 py-2 rounded-[10px] text-[13px] font-medium transition-all"
+            className="flex-shrink-0 px-3 py-1.5 rounded-[10px] font-medium transition-all"
             style={{
+              fontSize: "12px",
               background: activeDay === day.id ? "#1a1c24" : "transparent",
               color: activeDay === day.id ? "#FFFFFF" : "#4A5568",
               border: activeDay === day.id
                 ? "1px solid #ffffff1a"
                 : "1px solid transparent",
               whiteSpace: "nowrap",
+              lineHeight: "1.4",
             }}
             id={`day-tab-${day.id}`}
           >
             {day.dayLabel ?? `Día ${day.dayOrder}`}
-            {day.splitType && day.splitType !== "rest" && (
-              <span style={{ color: "var(--color-ink-dimmed)", marginLeft: "6px", fontSize: "11px" }}>
-                {SPLIT_LABELS[day.splitType] ?? day.splitType}
-              </span>
-            )}
           </button>
         ))}
       </div>
@@ -471,8 +468,7 @@ function ExerciseRow({
 
       {/* Fields row */}
       <div
-        className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 pb-3"
-        style={{ paddingLeft: "calc(12px + 15px + 8px + 16px + 8px)" }}
+        className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 pb-3 sm:pl-[59px] pl-3"
       >
         {/* Work sets */}
         <FieldChip label="Trabajo">
@@ -600,8 +596,7 @@ function ExerciseRow({
       {/* Notes panel */}
       {notesOpen && (
         <div
-          className="px-3 pb-3 pt-0"
-          style={{ paddingLeft: "calc(12px + 15px + 8px + 16px + 8px)" }}
+          className="px-3 pb-3 pt-0 sm:pl-[59px] pl-3"
         >
           <div
             className="rounded-[10px] overflow-hidden"

@@ -10,7 +10,7 @@ export function LogWeightButton({ unit }: { unit: "kg" | "lb" }) {
   return (
     <>
       <button
-        className="btn btn-primary btn-sm text-caption"
+        className="btn btn-primary btn-sm"
         onClick={() => setOpen(true)}
         id="log-weight-btn"
       >

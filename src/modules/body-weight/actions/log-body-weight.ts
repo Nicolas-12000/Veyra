@@ -12,14 +12,23 @@ export async function logBodyWeight(payload: unknown) {
     return { error: parsed.error.flatten() } as const;
   }
 
-  const userId = await requireUserId();
-  await upsertWeeklyMetric({
-    userId,
-    recordedDate: parsed.data.recordedDate ?? new Date(),
-    weightKg: parsed.data.weightKg,
-    notes: parsed.data.notes,
-  });
+  if (parsed.data.recordedDate && isNaN(parsed.data.recordedDate.getTime())) {
+    return { error: "Fecha inválida." } as const;
+  }
 
-  revalidatePath("/body-weight");
-  return { success: true } as const;
+  try {
+    const userId = await requireUserId();
+    await upsertWeeklyMetric({
+      userId,
+      recordedDate: parsed.data.recordedDate ?? new Date(),
+      weightKg: parsed.data.weightKg,
+      notes: parsed.data.notes,
+    });
+
+    revalidatePath("/body-weight");
+    return { success: true } as const;
+  } catch (error) {
+    console.error("Error logging body weight:", error);
+    return { error: "Error al guardar el peso. Intenta de nuevo." } as const;
+  }
 }

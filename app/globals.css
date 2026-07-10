@@ -349,6 +349,9 @@ body {
 }
 
 .btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background-color: var(--color-canvas-elevated);
   color: var(--color-ink-muted);
   border-radius: var(--radius-md);
@@ -866,7 +869,7 @@ body {
 
   /* Mobile: stack grid cards to 1 col */
   .card {
-    padding: 14px;
+    padding: 18px;
   }
 
   /* Hide non-essential table columns on mobile */

@@ -12,8 +12,12 @@ export async function createExerciseAction(payload: unknown) {
     return { error: parsed.error.flatten() } as const;
   }
 
-  await requireUserId();
-  const row = await createExercise(parsed.data);
-
-  return { success: true, exerciseId: row.id } as const;
+  try {
+    await requireUserId();
+    const row = await createExercise(parsed.data);
+    return { success: true, exerciseId: row.id } as const;
+  } catch (error) {
+    console.error("Error creating exercise:", error);
+    return { error: "Error al crear el ejercicio. Intenta con otro nombre." } as const;
+  }
 }

@@ -114,7 +114,7 @@ export default async function RoutineDetailPage({
           {/* Session start per day */}
           <div className="card">
             <h2 className="text-display-sm mb-6" style={{ color: "var(--color-ink)" }}>Iniciar sesión</h2>
-            <div className="grid gap-3" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))" }}>
+            <div className="grid gap-3 grid-cols-1 md:grid-cols-2">
               {routineData.days
                 .filter((d) => !d.isRestDay)
                 .map((day) => (

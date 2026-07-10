@@ -36,7 +36,7 @@ export default async function RoutinesPage() {
         <h1 className="text-display-lg" style={{ color: "var(--color-ink)" }}>Rutinas</h1>
         <Link
           href="/routines/new"
-          className="btn btn-primary btn-sm text-caption no-underline flex-shrink-0"
+          className="btn btn-primary btn-sm no-underline flex-shrink-0"
         >
           <Plus size={16} />
           <span className="hidden sm:inline">Nueva Rutina</span>

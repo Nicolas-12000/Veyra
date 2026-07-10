@@ -12,9 +12,13 @@ export async function addRoutineExerciseAction(payload: unknown) {
     return { error: parsed.error.flatten() } as const;
   }
 
-  const userId = await requireUserId();
-  const row = await addRoutineExercise({ userId, ...parsed.data });
-
-  revalidatePath("/routines");
-  return { success: true, routineExerciseId: row.id } as const;
+  try {
+    const userId = await requireUserId();
+    const row = await addRoutineExercise({ userId, ...parsed.data });
+    revalidatePath("/routines");
+    return { success: true, routineExerciseId: row.id } as const;
+  } catch (error) {
+    console.error("Error adding routine exercise:", error);
+    return { error: "Error al agregar el ejercicio a la rutina." } as const;
+  }
 }

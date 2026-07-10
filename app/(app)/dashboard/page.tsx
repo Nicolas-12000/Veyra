@@ -334,7 +334,7 @@ export default async function DashboardPage() {
             </Link>
             <Link
               href="/routines/new"
-              className="btn btn-ghost text-caption"
+              className="btn btn-ghost"
               style={{ textDecoration: "none", color: "var(--color-ink-muted)" }}
             >
               O primero crea una rutina →
