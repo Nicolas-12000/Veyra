@@ -31,6 +31,7 @@ export async function middleware(req: NextRequest) {
     "/analytics",
     "/profile",
     "/body-weight",
+    "/routines",
   ].some((path) => req.nextUrl.pathname.startsWith(path));
 
   const isLoginPath = req.nextUrl.pathname === "/login";

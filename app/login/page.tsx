@@ -20,7 +20,7 @@ export default async function LoginPage({
   return (
     <div
       className="min-h-dvh flex flex-col items-center justify-center px-4"
-      style={{ backgroundColor: "var(--color-canvas-light)" }}
+      style={{ backgroundColor: "var(--color-canvas-base)" }}
     >
       {/* Logo */}
       <div className="mb-10 flex flex-col items-center gap-4">
@@ -33,7 +33,7 @@ export default async function LoginPage({
         <div className="text-center">
           <h1
             style={{
-              color: "var(--color-ink-on-light)",
+              color: "var(--color-ink)",
               fontSize: "36px",
               fontWeight: 700,
               letterSpacing: "-0.03em",
@@ -44,7 +44,7 @@ export default async function LoginPage({
           <p
             className="mt-1"
             style={{
-              color: "#71717A",
+              color: "var(--color-ink-muted)",
               fontSize: "14px",
             }}
           >
@@ -57,8 +57,8 @@ export default async function LoginPage({
       <div
         className="w-full p-8"
         style={{
-          background: "var(--color-canvas-white)",
-          border: "1px solid rgba(0,0,0,0.08)",
+          background: "var(--color-canvas-elevated)",
+          border: "1px solid var(--color-border)",
           borderRadius: "var(--radius-xl)",
           maxWidth: 360,
           minWidth: 320,
@@ -68,7 +68,7 @@ export default async function LoginPage({
         <h2
           className="mb-2 text-center"
           style={{
-            color: "var(--color-ink-on-light)",
+            color: "var(--color-ink)",
             fontSize: "20px",
             fontWeight: 700,
             letterSpacing: "-0.02em",
@@ -78,7 +78,7 @@ export default async function LoginPage({
         </h2>
         <p
           className="mb-8 text-center"
-          style={{ color: "#71717A", fontSize: "14px" }}
+          style={{ color: "var(--color-ink-muted)", fontSize: "14px" }}
         >
           Inicia sesión para continuar
         </p>
@@ -90,6 +90,7 @@ export default async function LoginPage({
               background: "var(--color-danger-subtle)",
               color: "var(--color-danger)",
               borderRadius: "var(--radius-md)",
+              border: "1px solid var(--color-danger)",
             }}
           >
             Error: {errorMsg}
@@ -98,8 +99,8 @@ export default async function LoginPage({
 
         <form action={signInWithPassword} className="mb-4">
           <label
-            className="mb-1 block text-sm font-medium"
-            style={{ color: "var(--color-ink-on-light)" }}
+            className="mb-1.5 block text-sm font-medium"
+            style={{ color: "var(--color-ink)" }}
           >
             Correo electrónico
           </label>
@@ -107,23 +108,23 @@ export default async function LoginPage({
             name="email"
             type="email"
             required
-            className="mb-3 w-full px-3 py-2 text-sm"
+            className="mb-4 w-full px-3 py-2 text-sm"
             placeholder="tu@correo.com"
             style={{
               width: "100%",
               minWidth: 240,
               height: 48,
               borderRadius: "var(--radius-md)",
-              color: "var(--color-ink-on-light)",
-              backgroundColor: "var(--color-canvas-white)",
-              border: "1px solid #D1D5DB",
+              color: "var(--color-ink)",
+              backgroundColor: "var(--color-canvas-overlay)",
+              border: "1px solid var(--color-border-strong)",
               outline: "none",
             }}
           />
 
           <label
-            className="mb-1 block text-sm font-medium"
-            style={{ color: "var(--color-ink-on-light)" }}
+            className="mb-1.5 block text-sm font-medium"
+            style={{ color: "var(--color-ink)" }}
           >
             Contraseña
           </label>
@@ -131,16 +132,16 @@ export default async function LoginPage({
             name="password"
             type="password"
             required
-            className="mb-4 w-full px-3 py-2 text-sm"
+            className="mb-5 w-full px-3 py-2 text-sm"
             placeholder="••••••••"
             style={{
               width: "100%",
               minWidth: 240,
               height: 48,
               borderRadius: "var(--radius-md)",
-              color: "var(--color-ink-on-light)",
-              backgroundColor: "var(--color-canvas-white)",
-              border: "1px solid #D1D5DB",
+              color: "var(--color-ink)",
+              backgroundColor: "var(--color-canvas-overlay)",
+              border: "1px solid var(--color-border-strong)",
               outline: "none",
             }}
           />
@@ -173,6 +174,7 @@ export default async function LoginPage({
               background: "var(--color-success-subtle)",
               color: "var(--color-success)",
               borderRadius: "var(--radius-md)",
+              border: "1px solid var(--color-success)",
             }}
           >
             Revisa tu correo para continuar.
@@ -181,7 +183,7 @@ export default async function LoginPage({
 
         <p
           className="mt-6 text-center text-xs"
-          style={{ color: "#A1A1AA" }}
+          style={{ color: "var(--color-ink-dimmed)", lineHeight: "1.4" }}
         >
           Al continuar, aceptas nuestros{" "}
           <span style={{ color: "var(--color-primary)" }}>Términos de servicio</span> y{" "}
@@ -192,7 +194,7 @@ export default async function LoginPage({
       {/* Tagline */}
       <p
         className="mt-8 text-center text-xs"
-        style={{ color: "#A1A1AA" }}
+        style={{ color: "var(--color-ink-dimmed)" }}
       >
         Registra series. Detecta mesetas. Progresa.
       </p>

@@ -22,10 +22,11 @@ const navItems = [
   { href: "/profile", label: "Perfil", icon: User },
 ];
 
-// Bottom nav: 4 destinations per DESING.MD
+// Mobile bottom nav — 5 key destinations
 const bottomNavItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/session", label: "Sesión", icon: Dumbbell },
+  { href: "/routines", label: "Rutinas", icon: BookOpen },
   { href: "/analytics", label: "Analítica", icon: BarChart3 },
   { href: "/profile", label: "Perfil", icon: User },
 ];
@@ -43,7 +44,7 @@ export function AppNav() {
         {/* Logo */}
         <div className="mb-8 flex items-center gap-3">
           <div
-            className="flex h-9 w-9 items-center justify-center"
+            className="flex h-9 w-9 items-center justify-center flex-shrink-0"
             style={{ background: "var(--color-primary)", borderRadius: "var(--radius-md)" }}
           >
             <Dumbbell className="h-5 w-5" style={{ color: "#FFFFFF" }} strokeWidth={2.5} />
@@ -97,21 +98,16 @@ export function AppNav() {
             <Link
               key={item.href}
               href={item.href}
-              className="flex flex-col items-center justify-center gap-1 flex-1 h-full"
+              className="bottom-nav-item"
               style={{
                 color: active ? "var(--color-primary)" : "var(--color-ink-dimmed)",
-                textDecoration: "none",
-                transition: "color 120ms ease",
               }}
             >
-              <Icon className="h-5 w-5" />
-              <span
-                style={{
-                  fontSize: "10px",
-                  fontWeight: active ? 600 : 500,
-                  letterSpacing: "0.02em",
-                }}
-              >
+              <div className="bottom-nav-icon-wrap">
+                <Icon className="h-[22px] w-[22px]" />
+                {active && <span className="bottom-nav-dot" />}
+              </div>
+              <span className="bottom-nav-label" style={{ fontWeight: active ? 600 : 400 }}>
                 {item.label}
               </span>
             </Link>

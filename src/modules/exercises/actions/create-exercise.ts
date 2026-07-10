@@ -15,6 +15,5 @@ export async function createExerciseAction(payload: unknown) {
   await requireUserId();
   const row = await createExercise(parsed.data);
 
-  revalidatePath("/exercises");
   return { success: true, exerciseId: row.id } as const;
 }

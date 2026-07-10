@@ -3,7 +3,7 @@ import { requireUserId } from "@/src/modules/auth/server";
 import { getUserProfile } from "@/src/modules/body-weight/services";
 import { getExerciseSummaryForPeriodWithPrevious } from "@/src/modules/analytics/services";
 import { periodToStartDate, formatWeight, formatRelativeDate, PeriodCode, PlateauStatus } from "@/utils/math";
-import { Activity, Dumbbell, Calendar, Info } from "lucide-react";
+import { Activity, Dumbbell, Calendar, Info, Filter } from "lucide-react";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -97,7 +97,7 @@ export default async function AnalyticsPage({
   ];
 
   const musclesList = [
-    { label: "Todos", value: "all" },
+    { label: "Todos los músculos", value: "all" },
     { label: "Pecho", value: "pecho" },
     { label: "Espalda", value: "espalda" },
     { label: "Hombros", value: "hombros" },
@@ -111,7 +111,7 @@ export default async function AnalyticsPage({
   ];
 
   const statusesList = [
-    { label: "Todos", value: "all" },
+    { label: "Todos los estados", value: "all" },
     { label: "Progresando", value: "progressing" },
     { label: "Lento", value: "slow" },
     { label: "Estancado", value: "plateaued" },
@@ -126,98 +126,102 @@ export default async function AnalyticsPage({
 
   return (
     <div className="page-content pb-32">
-      <div className="mb-8">
+      <div className="mb-6">
         <h1 className="text-display-lg" style={{ color: "var(--color-ink)" }}>Analítica</h1>
         <p className="text-body" style={{ color: "var(--color-ink-muted)", marginTop: "2px" }}>
-          Rendimiento histórico y progresión de fuerza
+          Historial y progresión de fuerza
         </p>
       </div>
 
-      {/* Filter Chips Container */}
-      <div className="flex flex-col gap-6 mb-8 card">
-        {/* Period Filter */}
-        <div className="flex flex-col gap-2">
-          <span className="text-label-caps" style={{ color: "var(--color-ink-muted)" }}>Período</span>
-          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none whitespace-nowrap">
-            {periodsList.map((p) => {
-              const active = period === p.value;
-              return (
-                <Link
-                  key={p.value}
-                  href={`/analytics?period=${p.value}&muscle=${muscle}&status=${status}`}
-                  className={`filter-chip no-underline ${active ? "filter-chip-active" : ""}`}
-                >
-                  {p.label}
-                </Link>
-              );
-            })}
-          </div>
-        </div>
 
-        {/* Muscle Group Filter */}
-        <div className="flex flex-col gap-2">
-          <span className="text-label-caps" style={{ color: "var(--color-ink-muted)" }}>Grupo Muscular</span>
-          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none whitespace-nowrap">
-            {musclesList.map((m) => {
-              const active = muscle === m.value;
-              return (
-                <Link
-                  key={m.value}
-                  href={`/analytics?period=${period}&muscle=${m.value}&status=${status}`}
-                  className={`filter-chip no-underline ${active ? "filter-chip-active" : ""}`}
-                >
-                  {m.label}
-                </Link>
-              );
-            })}
-          </div>
-        </div>
 
-        {/* Plateau Status Filter */}
-        <div className="flex flex-col gap-2">
-          <span className="text-label-caps" style={{ color: "var(--color-ink-muted)" }}>Estado</span>
-          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none whitespace-nowrap">
-            {statusesList.map((s) => {
-              const active = status === s.value;
-              return (
-                <Link
-                  key={s.value}
-                  href={`/analytics?period=${period}&muscle=${muscle}&status=${s.value}`}
-                  className={`filter-chip no-underline ${active ? "filter-chip-active" : ""}`}
-                >
-                  {s.label}
-                </Link>
-              );
-            })}
+      {/* Styled filter rows using scrolling chips to keep it highly athletic & responsive */}
+      <div className="card mb-6" style={{ padding: "20px 16px" }}>
+        <div className="space-y-5">
+          {/* Period Filter */}
+          <div>
+            <span className="text-label-caps block mb-2.5" style={{ color: "var(--color-ink-muted)" }}>Período</span>
+            <div className="scroll-x">
+              {periodsList.map((p) => {
+                const active = period === p.value;
+                return (
+                  <Link
+                    key={p.value}
+                    href={`/analytics?period=${p.value}&muscle=${muscle}&status=${status}`}
+                    className={`filter-chip no-underline ${active ? "filter-chip-active" : ""}`}
+                  >
+                    {p.label}
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Muscle Group Filter */}
+          <div>
+            <span className="text-label-caps block mb-2.5" style={{ color: "var(--color-ink-muted)" }}>Grupo Muscular</span>
+            <div className="scroll-x">
+              {musclesList.map((m) => {
+                const active = muscle === m.value;
+                return (
+                  <Link
+                    key={m.value}
+                    href={`/analytics?period=${period}&muscle=${m.value}&status=${status}`}
+                    className={`filter-chip no-underline ${active ? "filter-chip-active" : ""}`}
+                  >
+                    {m.label}
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Plateau Status Filter */}
+          <div>
+            <span className="text-label-caps block mb-2.5" style={{ color: "var(--color-ink-muted)" }}>Estado</span>
+            <div className="scroll-x">
+              {statusesList.map((s) => {
+                const active = status === s.value;
+                return (
+                  <Link
+                    key={s.value}
+                    href={`/analytics?period=${period}&muscle=${muscle}&status=${s.value}`}
+                    className={`filter-chip no-underline ${active ? "filter-chip-active" : ""}`}
+                  >
+                    {s.label}
+                  </Link>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>
 
       {/* Results Section */}
       {filteredItems.length === 0 ? (
-        <div className="card text-center py-20">
-          <Activity size={64} className="mx-auto mb-6" style={{ color: "var(--color-ink-dimmed)" }} />
-          <h2 className="text-display-md mb-4" style={{ color: "var(--color-ink)" }}>
+        <div className="card text-center py-16">
+          <Activity size={48} className="mx-auto mb-4" style={{ color: "var(--color-ink-dimmed)" }} />
+          <h2 className="text-display-sm mb-2" style={{ color: "var(--color-ink)" }}>
             Sin Resultados
           </h2>
-          <p className="text-body mb-8 max-w-[400px] mx-auto" style={{ color: "var(--color-ink-muted)" }}>
-            No se encontraron ejercicios que coincidan con los filtros seleccionados o no hay entrenamientos registrados para este período.
+          <p className="text-caption mb-6 max-w-[320px] mx-auto" style={{ color: "var(--color-ink-muted)" }}>
+            No hay ejercicios que coincidan con los filtros seleccionados en este período.
           </p>
-          <Link href="/session" className="btn btn-primary no-underline inline-flex">
+          <Link href="/session" className="btn btn-primary btn-sm no-underline inline-flex">
             Iniciar Entrenamiento
           </Link>
         </div>
       ) : (
-        <div className="space-y-8">
+        <div className="space-y-6">
           {/* Adherence Heatmap calendar section */}
           {(() => {
             const { AdherenceHeatmap } = require("@/src/modules/sessions/components/AdherenceHeatmap");
             return <AdherenceHeatmap data={adherenceData} unit={unit} />;
           })()}
 
-          <div className="card">
-            <div className="flex items-center gap-3 mb-6">
-              <Dumbbell size={20} style={{ color: "var(--color-primary)" }} />
+          <div className="card" style={{ padding: "16px" }}>
+            <div className="flex items-center gap-2 mb-4">
+              <Dumbbell size={18} style={{ color: "var(--color-primary)" }} />
               <h2 className="text-display-sm" style={{ color: "var(--color-ink)" }}>Progresión por Ejercicio</h2>
             </div>
 
@@ -283,14 +287,14 @@ export default async function AnalyticsPage({
             <div className="block sm:hidden space-y-4">
               {filteredItems.map((item) => (
                 <div key={item.exerciseId} className="border-b pb-4 last:border-0 last:pb-0" style={{ borderColor: "var(--color-border)" }}>
-                  <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center justify-between mb-2">
                     <span className="text-body-strong" style={{ color: "var(--color-ink)" }}>{item.name}</span>
                     <span className="badge badge-muscle uppercase text-[10px]">{item.muscleGroup}</span>
                   </div>
-                  <div className="grid grid-cols-2 gap-y-3 gap-x-2 text-[14px]">
+                  <div className="grid grid-cols-2 gap-y-2.5 gap-x-2 text-[13px]">
                     <div>
                       <span className="text-caption block" style={{ color: "var(--color-ink-muted)" }}>Mejor 1RM</span>
-                      <span className="text-mono font-semibold" style={{ color: "var(--color-ink)" }}>
+                      <span className="text-mono font-semibold text-[14px]" style={{ color: "var(--color-ink)" }}>
                         {formatWeight(Number(item.best1rm), unit)}
                       </span>
                     </div>
@@ -318,7 +322,7 @@ export default async function AnalyticsPage({
                         {formatRelativeDate(item.lastTrained)}
                       </span>
                     </div>
-                    <div className="col-span-2 pt-2 flex items-center justify-between">
+                    <div className="col-span-2 pt-1.5 flex items-center justify-between border-t border-dashed" style={{ borderColor: "var(--color-border)" }}>
                       <span className="text-caption" style={{ color: "var(--color-ink-muted)" }}>Estado</span>
                       <span className={`badge ${
                         item.status === "progressing" ? "badge-progress" :
@@ -339,14 +343,14 @@ export default async function AnalyticsPage({
       )}
 
       {/* Info notice about estimation */}
-      <div className="card flex items-start gap-3 border-dashed mt-8" style={{ borderColor: "var(--color-border-strong)" }}>
-        <Info size={20} className="flex-shrink-0 mt-0.5" style={{ color: "var(--color-ink-muted)" }} />
+      <div className="card flex items-start gap-3 border-dashed mt-6" style={{ borderColor: "var(--color-border-strong)", padding: "14px" }}>
+        <Info size={18} className="flex-shrink-0 mt-0.5" style={{ color: "var(--color-ink-muted)" }} />
         <div>
-          <h4 className="text-body-strong mb-1" style={{ color: "var(--color-ink)" }}>Cálculo de Progresión y Mesetas</h4>
-          <p className="text-caption" style={{ color: "var(--color-ink-muted)" }}>
+          <h4 className="text-body-strong mb-1 text-[14px]" style={{ color: "var(--color-ink)" }}>Cálculo de Progresión y Mesetas</h4>
+          <p className="text-caption" style={{ color: "var(--color-ink-muted)", lineHeight: "1.4" }}>
             El 1RM estimado se calcula usando la fórmula de Epley: Carga × (1 + Reps / 30).
             La comparación se realiza respecto al período de tiempo equivalente anterior.
-            El estado de estancamiento se activa si la mejora del 1RM es inferior al 1.5% y el esfuerzo percibido (RPE) promedio de las últimas series ha sido superior a 8.5.
+            El estancamiento se activa si la mejora del 1RM es menor al 1.5% y el esfuerzo percibido (RPE) promedio de las últimas series ha sido superior a 8.5.
           </p>
         </div>
       </div>

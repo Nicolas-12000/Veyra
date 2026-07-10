@@ -983,112 +983,127 @@ function DayRow({
 }) {
   return (
     <div
-      className="rounded-xl p-4"
+      className="rounded-xl p-3 sm:p-4"
       style={{
         background: "var(--color-canvas-overlay)",
         border: "1px solid var(--color-border)",
       }}
     >
-      <div className="flex items-center gap-3 mb-3">
-        {/* Order controls */}
-        <div className="flex flex-col gap-0.5">
-          <button
-            type="button"
-            className="btn-icon cursor-pointer"
-            style={{
-              width: "24px",
-              height: "24px",
-              borderRadius: "var(--radius-xs)",
-              opacity: index === 0 ? 0.3 : 1,
-            }}
-            onClick={onMoveUp}
-            disabled={index === 0}
-            title="Mover arriba"
+      {/* Top Header Row for Controls & Info */}
+      <div className="flex items-center justify-between gap-2 mb-3">
+        <div className="flex items-center gap-2">
+          {/* Order controls */}
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              className="btn-icon cursor-pointer flex items-center justify-center"
+              style={{
+                width: "28px",
+                height: "28px",
+                minHeight: "28px",
+                borderRadius: "var(--radius-xs)",
+                opacity: index === 0 ? 0.3 : 1,
+              }}
+              onClick={onMoveUp}
+              disabled={index === 0}
+              title="Mover arriba"
+            >
+              <ChevronUp size={14} />
+            </button>
+            <button
+              type="button"
+              className="btn-icon cursor-pointer flex items-center justify-center"
+              style={{
+                width: "28px",
+                height: "28px",
+                minHeight: "28px",
+                borderRadius: "var(--radius-xs)",
+                opacity: index === total - 1 ? 0.3 : 1,
+              }}
+              onClick={onMoveDown}
+              disabled={index === total - 1}
+              title="Mover abajo"
+            >
+              <ChevronDown size={14} />
+            </button>
+          </div>
+
+          <div
+            className="text-label-caps font-semibold"
+            style={{ color: "var(--color-ink-dimmed)", fontSize: "11px" }}
           >
-            <ChevronUp size={12} />
-          </button>
-          <button
-            type="button"
-            className="btn-icon cursor-pointer"
-            style={{
-              width: "24px",
-              height: "24px",
-              borderRadius: "var(--radius-xs)",
-              opacity: index === total - 1 ? 0.3 : 1,
-            }}
-            onClick={onMoveDown}
-            disabled={index === total - 1}
-            title="Mover abajo"
-          >
-            <ChevronDown size={12} />
-          </button>
+            Día {index + 1}
+          </div>
         </div>
 
-        <div
-          className="text-label-caps flex-shrink-0"
-          style={{ color: "var(--color-ink-dimmed)", width: "40px" }}
+        <button
+          type="button"
+          className="btn-icon flex-shrink-0 cursor-pointer flex items-center justify-center"
+          onClick={onRemove}
+          title="Eliminar día"
+          style={{
+            color: "var(--color-danger)",
+            width: "28px",
+            height: "28px",
+            minHeight: "28px",
+            borderRadius: "var(--radius-xs)",
+          }}
         >
-          Día {index + 1}
-        </div>
+          <Trash2 size={13} />
+        </button>
+      </div>
 
+      {/* Form Input Elements Grid */}
+      <div className="grid gap-3 sm:grid-cols-2">
         <input
           type="text"
-          className="input"
-          style={{ height: "40px", flex: 1, fontSize: "14px" }}
+          className="input w-full"
+          style={{ height: "38px", fontSize: "13px", padding: "8px 12px" }}
           placeholder={`Nombre (ej: Push - Fuerza)`}
           value={day.dayLabel}
           onChange={(e) => onChange({ dayLabel: e.target.value })}
           maxLength={120}
         />
 
-        <button
-          type="button"
-          className="btn-icon flex-shrink-0 cursor-pointer"
-          onClick={onRemove}
-          title="Eliminar día"
-          style={{ color: "var(--color-danger)" }}
-        >
-          <Trash2 size={14} />
-        </button>
-      </div>
-
-      <div className="flex items-center gap-3 pl-[40px]">
-        <select
-          className="input"
-          style={{
-            height: "36px",
-            fontSize: "13px",
-            flex: 1,
-          }}
-          value={day.splitType}
-          onChange={(e) =>
-            onChange({ splitType: e.target.value as SplitType | "" })
-          }
-        >
-          {SPLIT_OPTIONS.map((o) => (
-            <option key={o.value} value={o.value}>
-              {o.label}
-            </option>
-          ))}
-        </select>
-
-        <label
-          className="flex items-center gap-2 text-label cursor-pointer"
-          style={{ color: "var(--color-ink-muted)", flexShrink: 0 }}
-        >
-          <input
-            type="checkbox"
-            checked={day.isRestDay}
-            onChange={(e) => {
-              onChange({
-                isRestDay: e.target.checked,
-                splitType: e.target.checked ? "rest" : "",
-              });
+        <div className="flex items-center gap-3">
+          <select
+            className="input"
+            style={{
+              height: "38px",
+              fontSize: "13px",
+              flex: 1,
+              padding: "4px 8px",
             }}
-            style={{ accentColor: "var(--color-primary)" }}
-          />
-          Descanso
-        </label>
+            value={day.splitType}
+            onChange={(e) =>
+              onChange({ splitType: e.target.value as SplitType | "" })
+            }
+          >
+            {SPLIT_OPTIONS.map((o) => (
+              <option key={o.value} value={o.value}>
+                {o.label}
+              </option>
+            ))}
+          </select>
+
+          <label
+            className="flex items-center gap-2 text-label cursor-pointer select-none"
+            style={{ color: "var(--color-ink-muted)", flexShrink: 0 }}
+          >
+            <input
+              type="checkbox"
+              checked={day.isRestDay}
+              onChange={(e) => {
+                onChange({
+                  isRestDay: e.target.checked,
+                  splitType: e.target.checked ? "rest" : "",
+                });
+              }}
+              style={{ accentColor: "var(--color-primary)", width: "16px", height: "16px" }}
+            />
+            Descanso
+          </label>
+        </div>
       </div>
     </div>
   );
