@@ -37,45 +37,76 @@ export function CompleteSessionButton({ sessionId }: { sessionId: string }) {
 
       {/* Inline Premium Modal */}
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in" style={{ background: "var(--color-scrim)" }}>
-          <div className="card max-w-sm w-full relative" style={{ border: "1px solid var(--color-border-strong)", background: "var(--color-canvas-overlay)" }}>
+        <div
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 animate-fade-in"
+          style={{ background: "var(--color-scrim)" }}
+        >
+          <div
+            className="w-full relative rounded-[20px] px-8 py-7"
+            style={{
+              maxWidth: "420px",
+              minWidth: "320px",
+              background: "var(--color-canvas-overlay)",
+              border: "1px solid var(--color-border-strong)",
+              boxShadow: "0 24px 64px rgba(0,0,0,0.5)",
+            }}
+          >
             {/* Close Button */}
             <button
               onClick={() => setIsOpen(false)}
-              className="absolute top-4 right-4 transition-colors cursor-pointer"
-              style={{ color: "var(--color-ink-muted)" }}
+              className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full transition-colors cursor-pointer"
+              style={{ color: "var(--color-ink-muted)", background: "var(--color-border)" }}
               aria-label="Cerrar modal"
             >
-              <X size={18} />
+              <X size={15} />
             </button>
 
-            <div className="flex flex-col items-center text-center mt-2">
-              <div className="w-12 h-12 rounded-full flex items-center justify-center mb-4" style={{ background: "var(--color-warning-subtle)", color: "var(--color-warning)" }}>
-                <AlertTriangle size={24} />
+            <div className="flex flex-col items-center text-center gap-3">
+              {/* Icon */}
+              <div
+                className="w-14 h-14 rounded-2xl flex items-center justify-center mb-1"
+                style={{ background: "var(--color-warning-subtle)", color: "var(--color-warning)" }}
+              >
+                <AlertTriangle size={26} />
               </div>
-              <h3 className="text-display-sm mb-2" style={{ color: "var(--color-ink)" }}>¿Terminar entrenamiento?</h3>
-              <p className="text-body mb-6" style={{ color: "var(--color-ink-muted)" }}>
+
+              {/* Title */}
+              <h3
+                className="text-[20px] font-bold leading-tight"
+                style={{ color: "var(--color-ink)", letterSpacing: "-0.02em" }}
+              >
+                ¿Terminar entrenamiento?
+              </h3>
+
+              {/* Body */}
+              <p
+                className="text-[14px] leading-relaxed"
+                style={{ color: "var(--color-ink-muted)", maxWidth: "300px" }}
+              >
                 Se registrarán todas las series y cargas completadas en esta sesión. No podrás editar los sets después.
               </p>
 
               {error && (
-                <div className="text-caption mb-4" style={{ color: "var(--color-danger)" }}>
+                <p className="text-[13px]" style={{ color: "var(--color-danger)" }}>
                   {error}
-                </div>
+                </p>
               )}
 
-              <div className="flex gap-3 w-full">
+              {/* Actions */}
+              <div className="flex gap-3 w-full mt-3">
                 <button
                   onClick={() => setIsOpen(false)}
                   disabled={isPending}
-                  className="btn btn-secondary flex-1 py-3"
+                  className="btn btn-secondary flex-1"
+                  style={{ paddingTop: "12px", paddingBottom: "12px" }}
                 >
                   Volver
                 </button>
                 <button
                   onClick={handleComplete}
                   disabled={isPending}
-                  className="btn btn-primary flex-1 py-3"
+                  className="btn btn-primary flex-1"
+                  style={{ paddingTop: "12px", paddingBottom: "12px" }}
                 >
                   {isPending ? (
                     <Loader2 size={18} className="animate-spin" />

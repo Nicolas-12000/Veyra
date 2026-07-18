@@ -659,22 +659,22 @@ function ExerciseDayPanel({
   onUpdate,
 }: ExerciseDayPanelProps) {
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
       {/* Column headers — desktop only */}
       {exercises.length > 0 && (
         <div
-          className="hidden md:grid mb-1 px-4"
+          className="hidden md:grid mb-2 px-5"
           style={{
-            gridTemplateColumns: "20px 1fr 60px 56px 72px 80px 100px 80px 36px",
-            gap: "8px",
+            gridTemplateColumns: "40px 1fr 64px 56px 88px 72px 120px 88px 36px 36px",
+            gap: "16px",
           }}
         >
-          {["#", "EJERCICIO", "TRAB.", "CAL.", "REPS", "RPE EARLY", "TÉCNICA", "DESCANSO", ""].map(
+          {["#", "EJERCICIO", "TRAB.", "CAL.", "REPS", "RPE EARLY", "TÉCNICA", "DESCANSO", "", ""].map(
             (col, i) => (
               <span
                 key={i}
                 className="text-[11px] font-semibold tracking-[0.07em] uppercase"
-                style={{ color: "#4A5568" }}
+                style={{ color: "var(--color-ink-dimmed)" }}
               >
                 {col}
               </span>
@@ -742,34 +742,33 @@ function DraftExerciseRow({ exercise, index, onRemove, onUpdate }: DraftExercise
 
   return (
     <div
-      className="rounded-[14px] transition-colors"
+      className="rounded-[14px] transition-all duration-200 border border-border bg-canvas-overlay hover:border-[var(--color-primary)]/20 p-3 md:py-3.5 md:px-5 md:grid md:items-center md:gap-4 md:min-h-[56px]"
       style={{
-        background: "#141416",
-        border: "1px solid rgba(255,255,255,0.08)",
+        gridTemplateColumns: "40px 1fr 64px 56px 88px 72px 120px 88px 36px 36px",
       }}
     >
       {/* Main row */}
-      <div className="flex items-center gap-2 px-3 py-3">
-        {/* Drag handle (visual only in create flow) */}
-        <GripVertical size={15} style={{ color: "#4A5568", flexShrink: 0 }} />
-
-        {/* Index */}
-        <span
-          className="text-[11px] font-semibold tracking-[0.07em] flex-shrink-0 tabular-nums"
-          style={{ color: "#4A5568", width: "16px" }}
-        >
-          {index + 1}
-        </span>
+      <div className="flex items-center gap-2 px-3 py-3 md:contents">
+        {/* Drag handle & Index */}
+        <div className="flex items-center gap-2 md:order-1 flex-shrink-0">
+          <GripVertical size={15} style={{ color: "var(--color-ink-dimmed)", flexShrink: 0 }} />
+          <span
+            className="text-[11px] font-semibold tracking-[0.07em] flex-shrink-0 tabular-nums text-center"
+            style={{ color: "var(--color-ink-dimmed)", width: "16px" }}
+          >
+            {index + 1}
+          </span>
+        </div>
 
         {/* Name + muscle */}
-        <div className="flex-1 min-w-0">
+        <div className="flex-1 min-w-0 md:order-2">
           <span
             className="text-[15px] font-semibold leading-tight truncate block"
-            style={{ color: "#FFFFFF", letterSpacing: "-0.01em" }}
+            style={{ color: "var(--color-ink)", letterSpacing: "-0.01em" }}
           >
             {exercise.exerciseName}
           </span>
-          <span className="text-[12px]" style={{ color: "#4A5568" }}>
+          <span className="text-[12px] block truncate" style={{ color: "var(--color-ink-muted)" }}>
             {exercise.muscleGroup}
           </span>
         </div>
@@ -778,7 +777,7 @@ function DraftExerciseRow({ exercise, index, onRemove, onUpdate }: DraftExercise
         <button
           type="button"
           onClick={() => setNotesOpen((v) => !v)}
-          className="flex-shrink-0 w-[32px] h-[32px] flex items-center justify-center rounded-[6px] transition-colors"
+          className="flex-shrink-0 w-[32px] h-[32px] flex items-center justify-center rounded-[6px] transition-colors md:order-9"
           style={{
             background: notesOpen || exercise.notes ? "#6B7BFF1A" : "transparent",
             color: notesOpen || exercise.notes ? "#6B7BFF" : "#4A5568",
@@ -792,7 +791,7 @@ function DraftExerciseRow({ exercise, index, onRemove, onUpdate }: DraftExercise
         {/* Remove */}
         <button
           type="button"
-          className="flex-shrink-0 w-[32px] h-[32px] flex items-center justify-center rounded-[6px] transition-colors"
+          className="flex-shrink-0 w-[32px] h-[32px] flex items-center justify-center rounded-[6px] transition-colors md:order-10"
           onClick={onRemove}
           aria-label="Eliminar ejercicio"
           style={{ color: "#FF6B6B", background: "transparent" }}
@@ -803,26 +802,25 @@ function DraftExerciseRow({ exercise, index, onRemove, onUpdate }: DraftExercise
 
       {/* Fields row */}
       <div
-        className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 pb-3"
-        style={{ paddingLeft: "calc(12px + 15px + 8px + 16px + 8px)" }}
+        className="flex flex-wrap items-center gap-x-4 gap-y-3 px-3 pb-3 pl-[59px] md:contents"
       >
         {/* Work sets */}
-        <FieldChip label="Trabajo">
+        <FieldChip label="Trabajo" className="md:order-3">
           <InlineNumberInput
             value={exercise.targetSets}
             onChange={(v) => onUpdate({ targetSets: v })}
             min={1}
-            width="28px"
+            width="36px"
             suffix="ser"
           />
         </FieldChip>
 
         {/* Warmup sets */}
-        <FieldChip label="Calent.">
+        <FieldChip label="Calent." className="md:order-4">
           <InlineTextInput
             value={exercise.warmupSets}
             onChange={(v) => onUpdate({ warmupSets: v })}
-            width="32px"
+            width="40px"
             placeholder="1-2"
           />
         </FieldChip>
@@ -830,30 +828,30 @@ function DraftExerciseRow({ exercise, index, onRemove, onUpdate }: DraftExercise
         <Separator />
 
         {/* Reps */}
-        <FieldChip label="Reps">
+        <FieldChip label="Reps" className="md:order-5">
           <InlineNumberInput
             value={exercise.targetRepsMin}
             onChange={(v) => onUpdate({ targetRepsMin: v })}
             min={1}
-            width="24px"
+            width="36px"
           />
           <span style={{ color: "#4A5568", fontSize: "11px" }}>–</span>
           <InlineNumberInput
             value={exercise.targetRepsMax}
             onChange={(v) => onUpdate({ targetRepsMax: v })}
             min={1}
-            width="24px"
+            width="36px"
           />
         </FieldChip>
 
         <Separator />
 
         {/* Early RPE */}
-        <FieldChip label="RPE early">
+        <FieldChip label="RPE early" className="md:order-6">
           <InlineTextInput
             value={exercise.earlySetRpe}
             onChange={(v) => onUpdate({ earlySetRpe: v })}
-            width="44px"
+            width="52px"
             placeholder="~8-9"
           />
         </FieldChip>
@@ -861,32 +859,37 @@ function DraftExerciseRow({ exercise, index, onRemove, onUpdate }: DraftExercise
         <Separator />
 
         {/* Last set technique */}
-        <div className="relative">
-          <button
-            type="button"
-            onClick={() => setTechniqueOpen((v) => !v)}
-            className="flex items-center gap-1 px-2 py-1 rounded-[6px] transition-colors"
-            style={{
-              background: "#22252e",
-              border: "1px solid #ffffff1a",
-              color:
-                exercise.lastSetTechnique && exercise.lastSetTechnique !== "—"
-                  ? "#8B9BFF"
-                  : "#8B95A8",
-              fontSize: "12px",
-              fontWeight: 500,
-            }}
-            aria-label="Técnica último set"
-          >
-            <span>{exercise.lastSetTechnique || "Fallo"}</span>
-            <ChevronDown size={11} style={{ color: "#4A5568" }} />
-          </button>
+        <div className="relative md:order-7 w-full md:w-auto">
+          <FieldChip label="Técnica">
+            <button
+              type="button"
+              onClick={() => setTechniqueOpen((v) => !v)}
+              className="flex items-center gap-1 transition-colors cursor-pointer w-full justify-between px-1"
+              style={{
+                background: "transparent",
+                border: "none",
+                color:
+                  exercise.lastSetTechnique && exercise.lastSetTechnique !== "—"
+                    ? "var(--color-primary-on-dark)"
+                    : "var(--color-ink)",
+                fontSize: "12px",
+                fontWeight: 500,
+                padding: 0,
+                outline: "none",
+                minWidth: 0,
+              }}
+              aria-label="Técnica último set"
+            >
+              <span className="truncate w-full text-center">{exercise.lastSetTechnique || "Fallo"}</span>
+              <ChevronDown size={11} className="flex-shrink-0" style={{ color: "var(--color-ink-dimmed)" }} />
+            </button>
+          </FieldChip>
           {techniqueOpen && (
             <div
               className="absolute z-20 mt-1 rounded-[10px] py-1 shadow-xl"
               style={{
-                background: "#22252e",
-                border: "1px solid #ffffff1a",
+                background: "var(--color-canvas-overlay)",
+                border: "1px solid var(--color-border-strong)",
                 minWidth: "160px",
                 top: "100%",
                 left: 0,
@@ -903,11 +906,12 @@ function DraftExerciseRow({ exercise, index, onRemove, onUpdate }: DraftExercise
                   className="w-full text-left px-3 py-2 text-[13px] transition-colors"
                   style={{
                     color:
-                      exercise.lastSetTechnique === opt ? "#6B7BFF" : "#FFFFFF",
+                      exercise.lastSetTechnique === opt ? "var(--color-primary)" : "var(--color-ink)",
                     background:
                       exercise.lastSetTechnique === opt
-                        ? "#6B7BFF1A"
+                        ? "var(--color-primary-subtle)"
                         : "transparent",
+                    border: "none",
                   }}
                 >
                   {opt}
@@ -920,12 +924,12 @@ function DraftExerciseRow({ exercise, index, onRemove, onUpdate }: DraftExercise
         <Separator />
 
         {/* Rest time */}
-        <FieldChip label="Descanso">
-          <span style={{ fontSize: "11px", color: "#4A5568" }}>⏱</span>
+        <FieldChip label="Descanso" className="md:order-8">
+          <span style={{ fontSize: "11px", color: "var(--color-ink-dimmed)" }}>⏱</span>
           <InlineTextInput
             value={exercise.restTime}
             onChange={(v) => onUpdate({ restTime: v })}
-            width="52px"
+            width="64px"
             placeholder="2-3 min"
           />
         </FieldChip>
@@ -934,14 +938,13 @@ function DraftExerciseRow({ exercise, index, onRemove, onUpdate }: DraftExercise
       {/* Notes panel */}
       {notesOpen && (
         <div
-          className="px-3 pb-3 pt-0"
-          style={{ paddingLeft: "calc(12px + 15px + 8px + 16px + 8px)" }}
+          className="px-3 pb-3 pt-0 pl-[59px] md:col-span-full md:px-4 md:pb-2 md:pt-1"
         >
           <div
             className="rounded-[10px] overflow-hidden"
             style={{
-              background: "#22252e",
-              border: "1px solid #ffffff1a",
+              background: "var(--color-canvas-overlay)",
+              border: "1px solid var(--color-border-strong)",
             }}
           >
             <textarea
@@ -1114,24 +1117,25 @@ function DayRow({
 function FieldChip({
   label,
   children,
+  className,
 }: {
   label: string;
   children: React.ReactNode;
+  className?: string;
 }) {
   return (
-    <div className="flex flex-col gap-0.5">
+    <div className={`flex flex-col gap-0.5 w-full ${className || ""}`}>
       <span
-        className="text-[10px] font-semibold tracking-[0.07em] uppercase"
-        style={{ color: "#4A5568" }}
+        className="text-[10px] font-semibold tracking-[0.07em] uppercase md:hidden"
+        style={{ color: "var(--color-ink-dimmed)" }}
       >
         {label}
       </span>
       <div
-        className="flex items-center gap-1 px-2 py-1 rounded-[6px]"
+        className="flex items-center justify-center gap-1.5 px-2.5 py-1 rounded-[6px] transition-colors hover:border-[var(--color-ink-dimmed)]/30 focus-within:border-[var(--color-primary)] w-full h-8"
         style={{
-          background: "#22252e",
-          border: "1px solid #ffffff1a",
-          minHeight: "28px",
+          background: "var(--color-canvas-overlay)",
+          border: "1px solid var(--color-border-strong)",
         }}
       >
         {children}
@@ -1165,7 +1169,7 @@ function InlineNumberInput({
         style={{
           width,
           background: "transparent",
-          color: "#FFFFFF",
+          color: "var(--color-ink)",
           fontSize: "13px",
           fontWeight: 500,
           textAlign: "center",
@@ -1177,7 +1181,7 @@ function InlineNumberInput({
         min={min}
       />
       {suffix && (
-        <span style={{ fontSize: "11px", color: "#4A5568" }}>{suffix}</span>
+        <span style={{ fontSize: "11px", color: "var(--color-ink-dimmed)" }}>{suffix}</span>
       )}
     </>
   );
@@ -1202,7 +1206,7 @@ function InlineTextInput({
       style={{
         width,
         background: "transparent",
-        color: "#FFFFFF",
+        color: "var(--color-ink)",
         fontSize: "12px",
         fontWeight: 500,
         textAlign: "center",
@@ -1218,6 +1222,7 @@ function InlineTextInput({
 function Separator() {
   return (
     <div
+      className="hidden sm:block md:hidden"
       style={{
         width: "1px",
         height: "20px",

@@ -323,7 +323,14 @@ export function WeightChart({
               x={phaseStartDate}
               stroke="var(--color-border-strong)"
               strokeDasharray="4 4"
-              label={{ value: "Inicio fase", fill: "var(--color-ink-dimmed)", fontSize: 10, position: "insideTopRight" }}
+              label={{
+                value: "Inicio fase",
+                fill: "var(--color-ink-dimmed)",
+                fontSize: 10,
+                position: "insideTopRight",
+                textAnchor: "start",
+                dx: 4,
+              }}
             />
           )}
         </ComposedChart>

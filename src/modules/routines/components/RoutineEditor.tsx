@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useTransition, useEffect, useRef } from "react";
-import { Plus, Trash2, Loader2, GripVertical, ChevronDown, StickyNote, X } from "lucide-react";
+import { Plus, Trash2, Loader2, GripVertical, ChevronDown, StickyNote } from "lucide-react";
 import { addRoutineExerciseAction } from "@/src/modules/routines/actions/add-routine-exercise";
 import { removeRoutineExerciseAction } from "@/src/modules/routines/actions/remove-routine-exercise";
 import { updateRoutineExerciseAction } from "@/src/modules/routines/actions/update-routine-exercise";
+import { reorderRoutineExercisesAction } from "@/src/modules/routines/actions/reorder-routine-exercises";
 import { ExercisePicker } from "./ExercisePicker";
 
 type Exercise = {
@@ -63,7 +64,10 @@ export function RoutineEditor({ routineId, days, allExercises }: RoutineEditorPr
   const [localDays, setLocalDays] = useState<RoutineDay[]>(days);
   const [removePending, startRemove] = useTransition();
   const [addPending, startAdd] = useTransition();
+  const [, startReorder] = useTransition();
   const [error, setError] = useState<string | null>(null);
+  const dragIndexRef = useRef<number | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
 
   const currentDay = localDays.find((d) => d.id === activeDay) ?? null;
 
@@ -155,6 +159,46 @@ export function RoutineEditor({ routineId, days, allExercises }: RoutineEditorPr
     );
   }
 
+  function handleDragStart(index: number) {
+    dragIndexRef.current = index;
+  }
+
+  function handleDragOver(e: React.DragEvent, index: number) {
+    e.preventDefault();
+    setDragOverIndex(index);
+  }
+
+  function handleDrop(dayId: string, exercises: RoutineExercise[]) {
+    const fromIdx = dragIndexRef.current;
+    const toIdx = dragOverIndex;
+    dragIndexRef.current = null;
+    setDragOverIndex(null);
+
+    if (fromIdx === null || toIdx === null || fromIdx === toIdx) return;
+
+    const reordered = [...exercises];
+    const [moved] = reordered.splice(fromIdx, 1);
+    reordered.splice(toIdx, 0, moved);
+    const withOrder = reordered.map((ex, i) => ({ ...ex, orderInDay: i + 1 }));
+
+    setLocalDays((prev) =>
+      prev.map((d) => (d.id === dayId ? { ...d, exercises: withOrder } : d))
+    );
+
+    const orderedIds = withOrder.map((ex) => ex.id);
+    startReorder(async () => {
+      const result = await reorderRoutineExercisesAction({ routineDayId: dayId, orderedIds });
+      if (result && "error" in result) {
+        setError("Error al reordenar los ejercicios.");
+      }
+    });
+  }
+
+  function handleDragEnd() {
+    dragIndexRef.current = null;
+    setDragOverIndex(null);
+  }
+
   return (
     <div>
       {/* Day tabs - scrollable horizontal strip */}
@@ -206,17 +250,17 @@ export function RoutineEditor({ routineId, days, allExercises }: RoutineEditorPr
               {/* Column header */}
               {currentDay.exercises.length > 0 && (
                 <div
-                  className="hidden md:grid mb-1 px-4"
+                  className="hidden md:grid mb-2 px-5"
                   style={{
-                    gridTemplateColumns: "20px 1fr 56px 56px 72px 72px 100px 80px 36px 36px",
-                    gap: "8px",
+                    gridTemplateColumns: "36px 1fr 62px 52px 82px 68px 112px 84px 32px 32px",
+                    gap: "12px",
                   }}
                 >
                   {["#", "EJERCICIO", "TRAB.", "CAL.", "REPS", "RPE EARLY", "TÉCNICA", "DESCANSO", "", ""].map(
                     (col, i) => (
                       <span
                         key={i}
-                        className="text-[11px] font-semibold tracking-[0.07em] uppercase"
+                        className="text-[10px] font-semibold tracking-[0.1em] uppercase text-center"
                         style={{ color: "var(--color-ink-dimmed)" }}
                       >
                         {col}
@@ -226,7 +270,7 @@ export function RoutineEditor({ routineId, days, allExercises }: RoutineEditorPr
                 </div>
               )}
 
-              <div className="space-y-2">
+              <div className="space-y-3">
                 {currentDay.exercises.length === 0 && (
                   <div
                     className="text-center py-10 rounded-[14px] text-[13px]"
@@ -248,6 +292,11 @@ export function RoutineEditor({ routineId, days, allExercises }: RoutineEditorPr
                     onRemove={() => handleRemoveExercise(ex.id)}
                     removePending={removePending}
                     onUpdate={handleUpdateExercise}
+                    isDragOver={dragOverIndex === idx}
+                    onDragStart={() => handleDragStart(idx)}
+                    onDragOver={(e) => handleDragOver(e, idx)}
+                    onDrop={() => handleDrop(currentDay.id, currentDay.exercises)}
+                    onDragEnd={handleDragEnd}
                   />
                 ))}
 
@@ -297,6 +346,11 @@ interface ExerciseRowProps {
   onRemove: () => void;
   removePending: boolean;
   onUpdate: (id: string, updatedFields: Partial<RoutineExercise>) => void;
+  isDragOver: boolean;
+  onDragStart: () => void;
+  onDragOver: (e: React.DragEvent) => void;
+  onDrop: () => void;
+  onDragEnd: () => void;
 }
 
 function ExerciseRow({
@@ -305,6 +359,11 @@ function ExerciseRow({
   onRemove,
   removePending,
   onUpdate,
+  isDragOver,
+  onDragStart,
+  onDragOver,
+  onDrop,
+  onDragEnd,
 }: ExerciseRowProps) {
   const [sets, setSets] = useState(String(exercise.targetSets));
   const [warmup, setWarmup] = useState(exercise.warmupSets ?? "");
@@ -386,32 +445,46 @@ function ExerciseRow({
 
   return (
     <div
-      className="rounded-[14px] transition-colors"
+      draggable
+      onDragStart={onDragStart}
+      onDragOver={onDragOver}
+      onDrop={onDrop}
+      onDragEnd={onDragEnd}
+      className="rounded-[14px] transition-all duration-200 border bg-canvas-overlay p-3 md:py-4 md:px-5 md:grid md:items-center md:gap-3 md:min-h-[60px]"
       style={{
-        background: "var(--color-canvas-overlay)",
-        border: "1px solid var(--color-border)",
+        gridTemplateColumns: "36px 1fr 62px 52px 82px 68px 112px 84px 32px 32px",
+        borderColor: isDragOver
+          ? "var(--color-primary)"
+          : "var(--color-border)",
+        boxShadow: isDragOver
+          ? "0 0 0 1px var(--color-primary), 0 4px 24px rgba(107,123,255,0.15)"
+          : undefined,
       }}
     >
       {/* Main row */}
       <div
-        className="flex items-center gap-2 px-3 py-3"
+        className="flex items-center gap-2 px-3 py-3 md:contents"
       >
-        {/* Drag handle */}
-        <GripVertical
-          size={15}
-          style={{ color: "var(--color-ink-dimmed)", flexShrink: 0, cursor: "grab" }}
-        />
-
-        {/* Index */}
-        <span
-          className="text-[11px] font-semibold tracking-[0.07em] flex-shrink-0 tabular-nums"
-          style={{ color: "var(--color-ink-dimmed)", width: "16px" }}
-        >
-          {index + 1}
-        </span>
+        {/* Drag handle & Index */}
+        <div className="flex items-center gap-2 md:order-1 flex-shrink-0">
+          <GripVertical
+            size={15}
+            style={{
+              color: isDragOver ? "var(--color-primary)" : "var(--color-ink-dimmed)",
+              flexShrink: 0,
+              cursor: "grab",
+            }}
+          />
+          <span
+            className="text-[11px] font-semibold tracking-[0.07em] flex-shrink-0 tabular-nums text-center"
+            style={{ color: "var(--color-ink-dimmed)", width: "16px" }}
+          >
+            {index + 1}
+          </span>
+        </div>
 
         {/* Exercise name + saving indicator */}
-        <div className="flex-1 min-w-0">
+        <div className="flex-1 min-w-0 md:order-2">
           <div className="flex items-center gap-2">
             <span
               className="text-[15px] font-semibold leading-tight truncate"
@@ -429,7 +502,7 @@ function ExerciseRow({
             )}
           </div>
           <span
-            className="text-[12px]"
+            className="text-[12px] block truncate"
             style={{ color: "var(--color-ink-muted)" }}
           >
             {exercise.muscleGroup}
@@ -439,7 +512,7 @@ function ExerciseRow({
         {/* Notes toggle */}
         <button
           onClick={() => setNotesOpen((v) => !v)}
-          className="flex-shrink-0 w-[32px] h-[32px] flex items-center justify-center rounded-[6px] transition-colors"
+          className="flex-shrink-0 w-[32px] h-[32px] flex items-center justify-center rounded-[6px] transition-colors md:order-9"
           style={{
             background: notesOpen || notes ? "#6B7BFF1A" : "transparent",
             color: notesOpen || notes ? "#6B7BFF" : "#4A5568",
@@ -452,7 +525,7 @@ function ExerciseRow({
 
         {/* Remove */}
         <button
-          className="flex-shrink-0 w-[32px] h-[32px] flex items-center justify-center rounded-[6px] transition-colors"
+          className="flex-shrink-0 w-[32px] h-[32px] flex items-center justify-center rounded-[6px] transition-colors md:order-10"
           onClick={onRemove}
           disabled={removePending}
           aria-label="Eliminar ejercicio"
@@ -468,27 +541,25 @@ function ExerciseRow({
 
       {/* Fields row */}
       <div
-        className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 pb-3 sm:pl-[59px] pl-3"
+        className="flex flex-wrap items-center gap-x-4 gap-y-3 px-3 pb-3 sm:pl-[59px] pl-3 md:contents"
       >
         {/* Work sets */}
-        <FieldChip label="Trabajo">
+        <FieldChip label="Trabajo" className="md:order-3">
           <InlineInput
             value={sets}
             onChange={setSets}
-            type="number"
             width="28px"
             placeholder="3"
-            min={1}
-            suffix="ser"
           />
+          <span style={{ fontSize: "12px", color: "var(--color-ink-muted)", fontWeight: 500 }}>ser</span>
         </FieldChip>
 
         {/* Warmup sets */}
-        <FieldChip label="Calent.">
+        <FieldChip label="Calent." className="md:order-4">
           <InlineTextInput
             value={warmup}
             onChange={setWarmup}
-            width="32px"
+            width="40px"
             placeholder="1-2"
           />
         </FieldChip>
@@ -496,34 +567,30 @@ function ExerciseRow({
         <Separator />
 
         {/* Reps */}
-        <FieldChip label="Reps">
+        <FieldChip label="Reps" className="md:order-5">
           <InlineInput
             value={repsMin}
             onChange={setRepsMin}
-            type="number"
-            width="24px"
+            width="28px"
             placeholder="8"
-            min={1}
           />
-          <span style={{ color: "#4A5568", fontSize: "11px" }}>–</span>
+          <span style={{ color: "var(--color-ink-muted)", fontSize: "13px", fontWeight: 400, lineHeight: 1 }}>–</span>
           <InlineInput
             value={repsMax}
             onChange={setRepsMax}
-            type="number"
-            width="24px"
+            width="28px"
             placeholder="12"
-            min={1}
           />
         </FieldChip>
 
         <Separator />
 
         {/* Early RPE */}
-        <FieldChip label="RPE early">
+        <FieldChip label="RPE early" className="md:order-6">
           <InlineTextInput
             value={earlyRpe}
             onChange={setEarlyRpe}
-            width="44px"
+            width="52px"
             placeholder="~8-9"
           />
         </FieldChip>
@@ -531,22 +598,27 @@ function ExerciseRow({
         <Separator />
 
         {/* Last set technique — dropdown */}
-        <div className="relative">
-          <button
-            onClick={() => setTechniqueOpen((v) => !v)}
-            className="flex items-center gap-1 px-2 py-1 rounded-[6px] transition-colors cursor-pointer"
-            style={{
-              background: "var(--color-canvas-overlay)",
-              border: "1px solid var(--color-border-strong)",
-              color: technique && technique !== "—" ? "var(--color-primary)" : "var(--color-ink-muted)",
-              fontSize: "12px",
-              fontWeight: 500,
-            }}
-            aria-label="Técnica último set"
-          >
-            <span>{technique || "Fallo"}</span>
-            <ChevronDown size={11} style={{ color: "var(--color-ink-dimmed)" }} />
-          </button>
+        <div className="relative md:order-7 w-full md:w-auto">
+          <FieldChip label="Técnica">
+            <button
+              onClick={() => setTechniqueOpen((v) => !v)}
+              className="flex items-center gap-1 transition-colors cursor-pointer w-full justify-between px-1"
+              style={{
+                background: "transparent",
+                border: "none",
+                color: technique && technique !== "—" ? "var(--color-primary-on-dark)" : "var(--color-ink)",
+                fontSize: "12px",
+                fontWeight: 500,
+                padding: 0,
+                outline: "none",
+                minWidth: 0,
+              }}
+              aria-label="Técnica último set"
+            >
+              <span className="truncate w-full text-center">{technique || "Fallo"}</span>
+              <ChevronDown size={11} className="flex-shrink-0" style={{ color: "var(--color-ink-dimmed)" }} />
+            </button>
+          </FieldChip>
           {techniqueOpen && (
             <div
               className="absolute z-20 mt-1 rounded-[10px] py-1 shadow-xl"
@@ -582,12 +654,11 @@ function ExerciseRow({
         <Separator />
 
         {/* Rest time */}
-        <FieldChip label="Descanso">
-          <span style={{ fontSize: "11px", color: "var(--color-ink-dimmed)" }}>⏱</span>
+        <FieldChip label="Descanso" className="md:order-8">
           <InlineTextInput
             value={restTime}
             onChange={setRestTime}
-            width="52px"
+            width="72px"
             placeholder="2-3 min"
           />
         </FieldChip>
@@ -596,7 +667,7 @@ function ExerciseRow({
       {/* Notes panel */}
       {notesOpen && (
         <div
-          className="px-3 pb-3 pt-0 sm:pl-[59px] pl-3"
+          className="px-3 pb-3 pt-0 sm:pl-[59px] pl-3 md:col-span-full md:px-4 md:pb-2 md:pt-1"
         >
           <div
             className="rounded-[10px] overflow-hidden"
@@ -628,24 +699,25 @@ function ExerciseRow({
 function FieldChip({
   label,
   children,
+  className,
 }: {
   label: string;
   children: React.ReactNode;
+  className?: string;
 }) {
   return (
-    <div className="flex flex-col gap-0.5">
+    <div className={`flex flex-col gap-1 w-full ${className || ""}`}>
       <span
-        className="text-[10px] font-semibold tracking-[0.07em] uppercase"
+        className="text-[10px] font-semibold tracking-[0.08em] uppercase md:hidden"
         style={{ color: "var(--color-ink-dimmed)" }}
       >
         {label}
       </span>
       <div
-        className="flex items-center gap-1 px-2 py-1 rounded-[6px]"
+        className="flex items-center justify-center gap-1.5 px-2.5 rounded-[8px] transition-all w-full h-8 focus-within:border-[var(--color-primary)] focus-within:shadow-[0_0_0_2px_rgba(107,123,255,0.15)]"
         style={{
-          background: "var(--color-canvas-overlay)",
-          border: "1px solid var(--color-border-strong)",
-          minHeight: "28px",
+          background: "rgba(0,0,0,0.25)",
+          border: "1px solid var(--color-border)",
         }}
       >
         {children}
@@ -657,45 +729,41 @@ function FieldChip({
 function InlineInput({
   value,
   onChange,
-  type = "text",
   width,
   placeholder,
-  min,
-  suffix,
 }: {
   value: string;
   onChange: (v: string) => void;
-  type?: string;
   width: string;
   placeholder?: string;
-  min?: number;
-  suffix?: string;
 }) {
   return (
-    <>
-      <input
-        type={type}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        style={{
-          width,
-          background: "transparent",
-          color: "var(--color-ink)",
-          fontSize: "13px",
-          fontWeight: 500,
-          textAlign: "center",
-          fontFeatureSettings: '"tnum"',
-          outline: "none",
-          border: "none",
-          padding: 0,
-        }}
-        placeholder={placeholder}
-        min={min}
-      />
-      {suffix && (
-        <span style={{ fontSize: "11px", color: "var(--color-ink-dimmed)" }}>{suffix}</span>
-      )}
-    </>
+    <input
+      type="text"
+      inputMode="numeric"
+      pattern="[0-9]*"
+      value={value}
+      onChange={(e) => {
+        const v = e.target.value;
+        if (v === "" || /^\d+$/.test(v)) onChange(v);
+      }}
+      style={{
+        width,
+        background: "transparent",
+        color: "var(--color-ink)",
+        fontSize: "13px",
+        fontWeight: 600,
+        textAlign: "center",
+        fontFeatureSettings: '"tnum"',
+        outline: "none",
+        border: "none",
+        padding: 0,
+        appearance: "none",
+        WebkitAppearance: "none",
+        MozAppearance: "textfield",
+      } as React.CSSProperties}
+      placeholder={placeholder}
+    />
   );
 }
 
@@ -719,8 +787,8 @@ function InlineTextInput({
         width,
         background: "transparent",
         color: "var(--color-ink)",
-        fontSize: "12px",
-        fontWeight: 500,
+        fontSize: "13px",
+        fontWeight: 600,
         textAlign: "center",
         outline: "none",
         border: "none",
@@ -734,6 +802,7 @@ function InlineTextInput({
 function Separator() {
   return (
     <div
+      className="hidden sm:block md:hidden"
       style={{
         width: "1px",
         height: "20px",
