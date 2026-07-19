@@ -802,7 +802,7 @@ function DraftExerciseRow({ exercise, index, onRemove, onUpdate }: DraftExercise
 
       {/* Fields row */}
       <div
-        className="flex flex-wrap items-center gap-x-4 gap-y-3 px-3 pb-3 pl-[59px] md:contents"
+        className="grid grid-cols-2 gap-3 px-3 pb-3 pl-3 sm:pl-[59px] sm:grid-cols-3 md:contents"
       >
         {/* Work sets */}
         <FieldChip label="Trabajo" className="md:order-3">
