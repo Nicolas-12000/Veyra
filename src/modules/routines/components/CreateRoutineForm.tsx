@@ -802,7 +802,7 @@ function DraftExerciseRow({ exercise, index, onRemove, onUpdate }: DraftExercise
 
       {/* Fields row */}
       <div
-        className="grid grid-cols-2 gap-3 px-3 pb-3 pl-3 sm:pl-[59px] sm:grid-cols-3 md:contents"
+        className="grid grid-cols-2 gap-2 px-3 pb-3 sm:pl-[59px] sm:grid-cols-3 md:contents"
       >
         {/* Work sets */}
         <FieldChip label="Trabajo" className="md:order-3">
@@ -1136,6 +1136,7 @@ function FieldChip({
         style={{
           background: "var(--color-canvas-overlay)",
           border: "1px solid var(--color-border-strong)",
+          minWidth: 0,
         }}
       >
         {children}
@@ -1167,7 +1168,8 @@ function InlineNumberInput({
           if (!isNaN(n)) onChange(n);
         }}
         style={{
-          width,
+          width: "100%",
+          maxWidth: width,
           background: "transparent",
           color: "var(--color-ink)",
           fontSize: "13px",
@@ -1204,7 +1206,9 @@ function InlineTextInput({
       value={value}
       onChange={(e) => onChange(e.target.value)}
       style={{
-        width,
+        width: "100%",
+        maxWidth: width,
+        minWidth: 0,
         background: "transparent",
         color: "var(--color-ink)",
         fontSize: "12px",
