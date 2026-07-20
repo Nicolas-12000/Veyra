@@ -59,7 +59,7 @@ export function ActiveSessionContainer({
   const activeExercise = exercises[activeIdx];
 
   return (
-    <div className="page-content pb-32">
+    <div className="page-content pb-16">
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-display-sm" style={{ color: "var(--color-ink)" }}>
@@ -115,14 +115,14 @@ export function ActiveSessionContainer({
       {exercises.length > 0 ? (
         <div className="space-y-6">
           {/* Progress Indicator */}
-          <div className="flex items-center justify-between p-3" style={{ background: "var(--color-canvas-elevated)", border: "1px solid var(--color-border)", borderRadius: "var(--radius-lg)" }}>
+          <div className="flex items-center justify-between p-3 gap-2 flex-wrap sm:flex-nowrap" style={{ background: "var(--color-canvas-elevated)", border: "1px solid var(--color-border)", borderRadius: "var(--radius-lg)" }}>
             <div className="flex items-center gap-2">
               <span className="text-caption" style={{ color: "var(--color-ink-muted)" }}>Progreso:</span>
               <span className="text-body-strong font-semibold" style={{ color: "var(--color-primary)" }}>
                 {activeIdx + 1} de {totalExercises}
               </span>
             </div>
-            <div className="flex-1 max-w-xs mx-4 h-1.5 rounded-full overflow-hidden" style={{ background: "var(--color-canvas-overlay)" }}>
+            <div className="hidden sm:block flex-1 max-w-xs mx-4 h-1.5 rounded-full overflow-hidden" style={{ background: "var(--color-canvas-overlay)" }}>
               <div 
                 className="h-full transition-all duration-300"
                 style={{
@@ -132,7 +132,7 @@ export function ActiveSessionContainer({
               />
             </div>
             {/* Quick dots */}
-            <div className="flex gap-1.5">
+            <div className="flex gap-1.5 flex-wrap justify-end">
               {exercises.map((_, i) => (
                 <button
                   key={i}
@@ -201,11 +201,9 @@ export function ActiveSessionContainer({
         />
       )}
 
-      {/* Floating Complete Button */}
-      <div className="fixed bottom-20 left-0 right-0 p-4 pointer-events-none flex justify-center z-10" style={{ background: "linear-gradient(to top, var(--color-canvas-base), transparent)" }}>
-        <div className="pointer-events-auto">
-          <CompleteSessionButton sessionId={sessionId} />
-        </div>
+      {/* Complete Button in normal flow */}
+      <div className="mt-10 pt-6 border-t border-[var(--color-border)] flex justify-center">
+        <CompleteSessionButton sessionId={sessionId} />
       </div>
     </div>
   );

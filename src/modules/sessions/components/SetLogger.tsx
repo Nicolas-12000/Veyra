@@ -311,7 +311,7 @@ export function SetLogger({
               <label className="text-label mb-2 block" style={{ color: "var(--color-ink-muted)" }}>
                 Carga ({unit})
               </label>
-              <div className="flex items-center gap-2">
+              <div className="gym-input-group">
                 <button
                   onClick={() => adjustWeight(-1)}
                   className="btn-icon"
@@ -343,7 +343,7 @@ export function SetLogger({
               <label className="text-label mb-2 block" style={{ color: "var(--color-ink-muted)" }}>
                 Repeticiones
               </label>
-              <div className="flex items-center gap-2">
+              <div className="gym-input-group">
                 <button
                   onClick={() => adjustReps(-1)}
                   className="btn-icon"

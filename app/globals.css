@@ -466,6 +466,32 @@ body {
   border-color: var(--color-border-focus);
 }
 
+.gym-input-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+@media (max-width: 640px) {
+  .gym-input-group {
+    gap: 4px;
+  }
+  
+  .gym-input-group .btn-icon {
+    width: 36px;
+    height: 36px;
+    min-height: 36px;
+  }
+  
+  .gym-input-group .input-number-gym {
+    padding: 8px 4px;
+    height: 48px;
+    font-size: 18px;
+  }
+}
+
+
 .input-number-large {
   background-color: var(--color-canvas-overlay);
   color: var(--color-ink);
